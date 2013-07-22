@@ -13,8 +13,9 @@
 
 #import <sys/socket.h>
 #import <netinet/in.h>
+#import <socket.IO/SocketIO.h>
 
-@interface IDViewController () <GCDAsyncUdpSocketDelegate, GCDAsyncSocketDelegate, NSStreamDelegate>
+@interface IDViewController () <GCDAsyncUdpSocketDelegate, GCDAsyncSocketDelegate, NSStreamDelegate, SocketIODelegate>
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic, strong) GCDAsyncSocket *tcpSocket;
@@ -22,6 +23,7 @@
 @property (nonatomic, strong) NSTimer *sendTimer, *readTimer;
 @property (nonatomic, strong) NSInputStream *inputStream;
 @property (nonatomic, strong) NSOutputStream *outputStream;
+@property (nonatomic, strong) SocketIO *websocket;
 
 @end
 
@@ -182,9 +184,11 @@ static const uint16_t kNoamUDPBroadcastPort = 1033;
 //    if (!self.inputStream) {
 //        [self startSocketWithHost:hostAddr andPort:connectionPort];
 //    }
-    if (!self.tcpSocket && ![self.tcpSocket isConnected]) {
-        [self createTCPSocketWithHost:hostAddr andPort:connectionPort];
-    }
+//    if (!self.tcpSocket && ![self.tcpSocket isConnected]) {
+//        [self createTCPSocketWithHost:hostAddr andPort:connectionPort];
+//    }
+    NSString *webSocketsURLString = [hostAddr stringByAppendingString:@"/websocket"];
+    
 }
 
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
@@ -272,6 +276,38 @@ static const uint16_t kNoamUDPBroadcastPort = 1033;
 		default:
 			NSLog(@"Unknown event");
 	}
+    
+}
+
+#pragma mark - WebSockets
+
+- (void)connectWebSocketsToHost:(NSString *)host onPort:(NSInteger)port {
+    self.websocket = [[SocketIO alloc] initWithDelegate:self];
+    [self.websocket connectToHost:host onPort:port];
+}
+
+#pragma mark - SocketIODelegate Methods
+
+-(void)socketIODidConnect:(SocketIO *)socket {
+    NSArray *registrationMessage = @[@"register", @"iosClient", @0, @[@"test"], @[@"test"], @"objective-c", @"0.1"];
+    NSData *sendData = [self messageDataForMessageArray:registrationMessage];
+    NSString *messageString = [[NSString alloc] initWithData:sendData encoding:NSUTF8StringEncoding];
+    [self.websocket sendMessage:messageString];
+}
+
+-(void)socketIO:(SocketIO *)socket didReceiveMessage:(SocketIOPacket *)packet {
+    
+}
+
+-(void)socketIO:(SocketIO *)socket didSendMessage:(SocketIOPacket *)packet {
+    
+}
+
+-(void)socketIO:(SocketIO *)socket onError:(NSError *)error {
+    
+}
+
+-(void)socketIODidDisconnect:(SocketIO *)socket disconnectedWithError:(NSError *)error {
     
 }
 
