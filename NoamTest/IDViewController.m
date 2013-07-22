@@ -14,8 +14,9 @@
 #import <sys/socket.h>
 #import <netinet/in.h>
 #import <socket.IO/SocketIO.h>
+#import <SocketRocket/SRWebSocket.h>
 
-@interface IDViewController () <GCDAsyncUdpSocketDelegate, GCDAsyncSocketDelegate, NSStreamDelegate, SocketIODelegate>
+@interface IDViewController () <GCDAsyncUdpSocketDelegate, GCDAsyncSocketDelegate, NSStreamDelegate, SocketIODelegate, SRWebSocketDelegate>
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic, strong) GCDAsyncSocket *tcpSocket;
@@ -23,7 +24,7 @@
 @property (nonatomic, strong) NSTimer *sendTimer, *readTimer;
 @property (nonatomic, strong) NSInputStream *inputStream;
 @property (nonatomic, strong) NSOutputStream *outputStream;
-@property (nonatomic, strong) SocketIO *websocket;
+@property (nonatomic, strong) SRWebSocket *websocket;
 
 @end
 
@@ -181,14 +182,17 @@ static const uint16_t kNoamUDPBroadcastPort = 1033;
     if (!hostAddr || connectionPort < 0) {
         return;
     }
+    self.udpSocket = nil;
 //    if (!self.inputStream) {
 //        [self startSocketWithHost:hostAddr andPort:connectionPort];
 //    }
 //    if (!self.tcpSocket && ![self.tcpSocket isConnected]) {
 //        [self createTCPSocketWithHost:hostAddr andPort:connectionPort];
 //    }
-    NSString *webSocketsURLString = [hostAddr stringByAppendingString:@"/websocket"];
-    
+    if (!self.websocket) {
+        NSString *webSocketsURLString = [hostAddr stringByAppendingString:@"/websocket"];
+        [self connectWebSocketsToHost:webSocketsURLString onPort:connectionPort];
+    }
 }
 
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
@@ -282,32 +286,32 @@ static const uint16_t kNoamUDPBroadcastPort = 1033;
 #pragma mark - WebSockets
 
 - (void)connectWebSocketsToHost:(NSString *)host onPort:(NSInteger)port {
-    self.websocket = [[SocketIO alloc] initWithDelegate:self];
-    [self.websocket connectToHost:host onPort:port];
+    port = 8089;
+    NSString *fullURLString = [NSString stringWithFormat:@"ws://10.1.5.111:%d/websocket",port];
+    self.websocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:fullURLString]];
+    self.websocket.delegate = self;
+    [self.websocket open];
 }
 
-#pragma mark - SocketIODelegate Methods
+#pragma mark - SRWebSocketDelegate Methods
 
--(void)socketIODidConnect:(SocketIO *)socket {
+-(void)webSocketDidOpen:(SRWebSocket *)webSocket {
     NSArray *registrationMessage = @[@"register", @"iosClient", @0, @[@"test"], @[@"test"], @"objective-c", @"0.1"];
     NSData *sendData = [self messageDataForMessageArray:registrationMessage];
     NSString *messageString = [[NSString alloc] initWithData:sendData encoding:NSUTF8StringEncoding];
-    [self.websocket sendMessage:messageString];
+    NSLog(@"%@", messageString);
+    [self.websocket send:sendData];
 }
 
--(void)socketIO:(SocketIO *)socket didReceiveMessage:(SocketIOPacket *)packet {
+-(void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
     
 }
 
--(void)socketIO:(SocketIO *)socket didSendMessage:(SocketIOPacket *)packet {
+-(void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     
 }
 
--(void)socketIO:(SocketIO *)socket onError:(NSError *)error {
-    
-}
-
--(void)socketIODidDisconnect:(SocketIO *)socket disconnectedWithError:(NSError *)error {
+-(void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     
 }
 
