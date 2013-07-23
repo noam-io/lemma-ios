@@ -43,13 +43,62 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
 
 @interface IDNoamLemma : NSObject
 
+/**
+ @name Accessing the shared lemma
+ */
+
+/** Accessor for the shared lemma.
+ 
+ If the shared lemma hasn't been initialized, this will init the lemma with a default
+ client name and empty `hears` and `plays` arrays. You will need to set these in order
+ for the lemma to work properly.
+ 
+ @returns The shared singleton lemma.
+ 
+ */
 + (instancetype)sharedLemma;
+
+/** Accessor for the shared lemma with parameters..
+ 
+ If the shared lemma hasn't been initialized, this will init the lemma with the given
+ parameters. If the lemma exists, the parameters will be updated to match the passed
+ in parameters.
+ 
+ @param clientName The client name registered on the Noam network.
+ @param hears An array of strings representing the heard events.
+ @param plays An array of strings representing the played events.
+ @returns The shared singleton lemma.
+ @warning If you change the parameters after initializing, you must disconnect & reconnect.
+ 
+ */
 + (instancetype)sharedLemmaWithClientName:(NSString *)clientName
                                hearsArray:(NSArray *)hears
                                playsArray:(NSArray *)plays;
 
+/** 
+ @name Communicating with Noam
+ */
+
+/**
+ Initiate the connection with the Noam server.
+ */
 - (void)connectToNoam;
+
+/**
+ Disconnect from the Noam server and close all connections.
+ */
 - (void)disconnectFromNoam;
+
+/** Send an event to the Noam network.
+ 
+ Sends an event to the Noam network. The data can be any object type that is JSON
+ serializable.
+ 
+ @param data Any object that's JSON serializable.
+ @param eventName Name of the event being sent. This name should be in the `plays` array.
+ @warning No data will be sent if `data` is not JSON serializable.
+ 
+ */
 - (void)sendData:(id)data forEventName:(NSString *)eventName;
 
 @property (nonatomic, copy) NSString *clientName;
