@@ -21,25 +21,33 @@
 
 @implementation IDNoamLemma
 
+static const NSInteger kNoamClientVersion = 0.1;
 static const uint16_t kNoamUDPBroadcastPort = 1033;
 static const NSInteger kNoamWebsocketsPort = 8089;
 static NSString * const kNoamDefaultClientName = @"obj-c-client";
+static NSString * const kNoamClientLibraryName = @"obj-c";
+static NSString * const kNoamRegisterKey = @"register";
+static NSString * const kNoamEventKey = @"event";
 
-+ (instancetype)lemma {
-    return [self lemmaWithClientName:nil hearsArray:@[] playsArray:@[]];
++ (instancetype)sharedLemma {
+    return [self sharedLemmaWithClientName:nil hearsArray:nil playsArray:nil];
 }
 
-+ (instancetype)lemmaWithClientName:(NSString *)clientName
-                         hearsArray:(NSArray *)hears
-                         playsArray:(NSArray *)plays {
-    IDNoamLemma *lemma = [[self alloc] init];
-    clientName = (clientName) ? clientName : [kNoamDefaultClientName stringByAppendingFormat:@"-%d", (rand() % 1000)];
-    hears = (hears) ? hears : @[];
-    plays = (plays) ? plays : @[];
-    lemma.clientName = clientName;
-    lemma.hears = hears;
-    lemma.plays = plays;
-    return lemma;
++ (instancetype)sharedLemmaWithClientName:(NSString *)clientName
+                               hearsArray:(NSArray *)hears
+                               playsArray:(NSArray *)plays {
+    static IDNoamLemma *sharedLemma = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedLemma = [[self alloc] init];
+        sharedLemma.clientName = (clientName) ? clientName : [kNoamDefaultClientName stringByAppendingFormat:@"-%d", (rand() % 1000)];
+        sharedLemma.hears = (hears) ? hears : @[];
+        sharedLemma.plays = (plays) ? plays : @[];
+    });
+    sharedLemma.clientName = (clientName) ? clientName : sharedLemma.clientName;
+    sharedLemma.hears = (hears) ? hears : sharedLemma.hears;
+    sharedLemma.plays = (plays) ? plays : sharedLemma.plays;
+    return sharedLemma;
 }
 
 - (id)init {
@@ -158,21 +166,18 @@ static NSString * const kNoamDefaultClientName = @"obj-c-client";
 #pragma mark - SRWebSocketDelegate Methods
 
 -(void)webSocketDidOpen:(SRWebSocket *)webSocket {
-    NSArray *registrationMessage = @[@"register",
-                                     @"iosClient",
+    NSArray *registrationMessage = @[kNoamRegisterKey,
+                                     self.clientName,
                                      @0,
-                                     @[@"test"],
-                                     @[@"test"],
-                                     @"objective-c",
-                                     @"0.1"];
+                                     self.hears,
+                                     self.plays,
+                                     kNoamClientLibraryName,
+                                     @(kNoamClientVersion)];
     NSData *sendData = [self messageDataForMessageArray:registrationMessage];
-    NSString *messageString = [[NSString alloc] initWithData:sendData encoding:NSUTF8StringEncoding];
-    NSLog(@"%@", messageString);
     [self.websocket send:sendData];
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
-    static NSString * const kNoamEventKey = @"event";
     if ([message isKindOfClass:[NSString class]]) {
         NSData *dataFromString = [((NSString *)message) dataUsingEncoding:NSUTF8StringEncoding];
         id jsonObj = [NSJSONSerialization JSONObjectWithData:dataFromString options:0 error:nil];
@@ -189,8 +194,8 @@ static NSString * const kNoamDefaultClientName = @"obj-c-client";
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-//    [self disconnectFromNoam];
-//    [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
+    [self disconnectFromNoam];
+    [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {

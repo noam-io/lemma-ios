@@ -30,10 +30,10 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
 
 @interface IDNoamLemma : NSObject
 
-+ (instancetype)lemma;
-+ (instancetype)lemmaWithClientName:(NSString *)clientName
-                         hearsArray:(NSArray *)hears
-                         playsArray:(NSArray *)plays;
++ (instancetype)sharedLemma;
++ (instancetype)sharedLemmaWithClientName:(NSString *)clientName
+                               hearsArray:(NSArray *)hears
+                               playsArray:(NSArray *)plays;
 
 - (void)connectToNoam;
 - (void)disconnectFromNoam;
