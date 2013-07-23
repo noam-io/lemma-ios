@@ -1,17 +1,17 @@
 //
-//  IDViewController.m
+//  IDNoamLemma.m
 //  NoamTest
 //
-//  Created by Timothy Shi on 7/18/13.
+//  Created by Timothy Shi on 7/22/13.
 //  Copyright (c) 2013 IDEO LLC. All rights reserved.
 //
 
-#import "IDViewController.h"
+#import "IDNoamLemma.h"
 
 #import <CocoaAsyncSocket/GCDAsyncUdpSocket.h>
 #import <SocketRocket/SRWebSocket.h>
 
-@interface IDViewController () <GCDAsyncUdpSocketDelegate, SRWebSocketDelegate>
+@interface IDNoamLemma () <GCDAsyncUdpSocketDelegate, SRWebSocketDelegate>
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic) dispatch_queue_t delegateQueue;
@@ -19,15 +19,28 @@
 
 @end
 
-@implementation IDViewController
+@implementation IDNoamLemma
 
 static const uint16_t kNoamUDPBroadcastPort = 1033;
 static const NSInteger kNoamWebsocketsPort = 8089;
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    self.delegateQueue = dispatch_queue_create("com.ideo.noam.delegateQueue", DISPATCH_QUEUE_SERIAL);
++ (instancetype)lemma {
+    return [[self alloc] init];
+}
+
+- (id)init {
+    self = [super init];
+    if (self) {
+        self.delegateQueue = dispatch_queue_create("com.ideo.noam.delegateQueue", DISPATCH_QUEUE_SERIAL);
+    }
+    return self;
+}
+
+- (void)connectToNoam {
+    [self beginFindingNoam];
+}
+
+- (void)beginFindingNoam {
     self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:self.delegateQueue];
     [self.udpSocket bindToPort:kNoamUDPBroadcastPort error:nil];
     [self.udpSocket beginReceiving:nil];
@@ -64,22 +77,14 @@ static const NSInteger kNoamWebsocketsPort = 8089;
     [scanner setCharactersToBeSkipped:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]];
     int connectionPort = -1;
     [scanner scanInt:&connectionPort];
-    __block NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
-    NSString *regExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
-    NSError *error = NULL;
-    NSRegularExpression *regex = [NSRegularExpression
-                                  regularExpressionWithPattern:regExPattern
-                                  options:NSRegularExpressionCaseInsensitive
-                                  error:&error];
-    [regex enumerateMatchesInString:hostAddr options:0 range:NSMakeRange(0, [hostAddr length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
-        hostAddr = [hostAddr substringWithRange:[match range]];
-    }];
+    NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
     if (!hostAddr || connectionPort < 0) {
         return;
     }
     self.udpSocket = nil;
     if (!self.websocket) {
-        [self connectWebSocketsToHost:hostAddr];
+        NSString *webSocketsURLString = [hostAddr stringByAppendingString:@"/websocket"];
+        [self connectWebSocketsToHost:webSocketsURLString onPort:connectionPort];
     }
 }
 
@@ -93,8 +98,9 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 
 #pragma mark - WebSockets
 
-- (void)connectWebSocketsToHost:(NSString *)host {
-    NSString *fullURLString = [NSString stringWithFormat:@"ws://%@:%d/websocket",host, kNoamWebsocketsPort];
+- (void)connectWebSocketsToHost:(NSString *)host onPort:(NSInteger)port {
+    port = 8089;
+    NSString *fullURLString = [NSString stringWithFormat:@"ws://10.1.5.111:%d/websocket",port];
     self.websocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:fullURLString]];
     self.websocket.delegate = self;
     [self.websocket open];
