@@ -77,14 +77,22 @@ static const NSInteger kNoamWebsocketsPort = 8089;
     [scanner setCharactersToBeSkipped:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]];
     int connectionPort = -1;
     [scanner scanInt:&connectionPort];
-    NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
+    __block NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
+    NSString *regExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression
+                                  regularExpressionWithPattern:regExPattern
+                                  options:NSRegularExpressionCaseInsensitive
+                                  error:&error];
+    [regex enumerateMatchesInString:hostAddr options:0 range:NSMakeRange(0, [hostAddr length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
+        hostAddr = [hostAddr substringWithRange:[match range]];
+    }];
     if (!hostAddr || connectionPort < 0) {
         return;
     }
     self.udpSocket = nil;
     if (!self.websocket) {
-        NSString *webSocketsURLString = [hostAddr stringByAppendingString:@"/websocket"];
-        [self connectWebSocketsToHost:webSocketsURLString onPort:connectionPort];
+        [self connectWebSocketsToHost:hostAddr];
     }
 }
 
@@ -98,9 +106,8 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 
 #pragma mark - WebSockets
 
-- (void)connectWebSocketsToHost:(NSString *)host onPort:(NSInteger)port {
-    port = 8089;
-    NSString *fullURLString = [NSString stringWithFormat:@"ws://10.1.5.111:%d/websocket",port];
+- (void)connectWebSocketsToHost:(NSString *)host {
+    NSString *fullURLString = [NSString stringWithFormat:@"ws://%@:%d/websocket",host, kNoamWebsocketsPort];
     self.websocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:fullURLString]];
     self.websocket.delegate = self;
     [self.websocket open];
