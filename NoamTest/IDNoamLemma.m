@@ -111,10 +111,13 @@ static NSString * const kNoamEventKey = @"event";
 
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didNotConnect:(NSError *)error {
     [self disconnectFromNoam];
-    [self.delegate noamLemma:self didFailToConnectWithError:error];
+    if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
+        [self.delegate noamLemma:self didFailToConnectWithError:error];
+    }
 }
 
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext {
+    static NSString * const kIPRegExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
     NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     // Old code that grabs the connection port from Noam. Not relevant if we're connecting via WebSockets,
     // but may be useful in the future if we switch back to TCP.
@@ -124,10 +127,9 @@ static NSString * const kNoamEventKey = @"event";
     [scanner scanInt:&connectionPort];
     // Uses a RegEx to pull the Noam host IP out of the address string.
     __block NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
-    NSString *regExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
     NSError *error = NULL;
     NSRegularExpression *regex = [NSRegularExpression
-                                  regularExpressionWithPattern:regExPattern
+                                  regularExpressionWithPattern:kIPRegExPattern
                                   options:NSRegularExpressionCaseInsensitive
                                   error:&error];
     [regex enumerateMatchesInString:hostAddr
@@ -150,7 +152,9 @@ static NSString * const kNoamEventKey = @"event";
     self.udpSocket = nil;
     if (!self.websocket) {
         [self disconnectFromNoam];
-        [self.delegate noamLemma:self didFailToConnectWithError:error];
+        if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
+            [self.delegate noamLemma:self didFailToConnectWithError:error];
+        }
     }
 }
 
@@ -187,7 +191,9 @@ static NSString * const kNoamEventKey = @"event";
                 NSString *lemmaID = jsonArray[1];
                 NSString *eventName = jsonArray[2];
                 id eventData = jsonArray[3];
-                [self.delegate noamLemma:self didReceiveData:eventData fromLemma:lemmaID forEvent:eventName];
+                if ([self.delegate respondsToSelector:@selector(noamLemma:didReceiveData:fromLemma:forEvent:)]) {
+                    [self.delegate noamLemma:self didReceiveData:eventData fromLemma:lemmaID forEvent:eventName];
+                }
             }
         }
     }
@@ -195,12 +201,16 @@ static NSString * const kNoamEventKey = @"event";
 
 -(void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     [self disconnectFromNoam];
-    [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
+    if ([self.delegate respondsToSelector:@selector(noamLemma:connectionDidCloseWithReason:)]) {
+        [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
+    }
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
     [self disconnectFromNoam];
-    [self.delegate noamLemma:self didFailToConnectWithError:error];
+    if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
+        [self.delegate noamLemma:self didFailToConnectWithError:error];
+    }
 }
 
 @end

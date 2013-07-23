@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
 
 @class IDNoamLemma;
 
-@protocol IDNoamDelegate
+@protocol IDNoamDelegate <NSObject>
 
 @optional
 - (void)noamLemma:(IDNoamLemma *)lemma didFailToConnectWithError:(NSError *)error;
