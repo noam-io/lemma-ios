@@ -37,8 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		4B86412C179DFB6700AA26A0 /* IDNoamLemma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDNoamLemma.h; sourceTree = "<group>"; };
-		4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDNoamLemma.m; sourceTree = "<group>"; };
+		4B86412C179DFB6700AA26A0 /* IDNoamLemma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IDNoamLemma.h; path = ../NoamLemma/IDNoamLemma.h; sourceTree = "<group>"; };
+		4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IDNoamLemma.m; path = ../NoamLemma/IDNoamLemma.m; sourceTree = "<group>"; };
 		4BFBFA971798CBA300E8489A /* NoamTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoamTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BFBFA9A1798CBA300E8489A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4BFBFA9C1798CBA300E8489A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -438,6 +438,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NoamTest/NoamTest-Prefix.pch";
 				INFOPLIST_FILE = "NoamTest/NoamTest-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -452,6 +453,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NoamTest/NoamTest-Prefix.pch";
 				INFOPLIST_FILE = "NoamTest/NoamTest-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
