@@ -36,8 +36,34 @@ static const NSInteger kNoamWebsocketsPort = 8089;
     return self;
 }
 
+- (IDNoamLemmaReadyState)readyState {
+    if (self.websocket) {
+        if (self.websocket.readyState == SR_CONNECTING) {
+            return IDNoamLemmaConnecting;
+        } else if (self.websocket.readyState == SR_OPEN) {
+            return IDNoamLemmaConnected;
+        }
+    } else if (self.udpSocket) {
+        if ([self.udpSocket isConnected]) {
+            return IDNoamLemmaConnecting;
+        }
+    }
+    return IDNoamLemmaNotConnected;
+}
+
 - (void)connectToNoam {
     [self beginFindingNoam];
+}
+
+- (void)disconnectFromNoam {
+    if (self.udpSocket) {
+        [self.udpSocket close];
+        self.udpSocket = nil;
+    }
+    if (self.websocket) {
+        [self.websocket close];
+        self.websocket = nil;
+    }
 }
 
 - (void)beginFindingNoam {
@@ -55,28 +81,26 @@ static const NSInteger kNoamWebsocketsPort = 8089;
     return sendData;
 }
 
+-(void)dealloc {
+    [self disconnectFromNoam];
+}
+
 #pragma mark - GCDAsyncUdpSocketDelegate Methods
 
--(void)udpSocket:(GCDAsyncUdpSocket *)sock didConnectToAddress:(NSData *)address {
-    NSLog(@"connected to address: %@", address);
-}
-
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didNotConnect:(NSError *)error {
-    
-}
-
--(void)udpSocket:(GCDAsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error {
-    
+    [self disconnectFromNoam];
+    [self.delegate noamLemma:self didFailToConnectWithError:error];
 }
 
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext {
-    [sock close];
     NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"%@", message);
+    // Old code that grabs the connection port from Noam. Not relevant if we're connecting via WebSockets,
+    // but may be useful in the future if we switch back to TCP.
     NSScanner *scanner = [NSScanner scannerWithString:message];
     [scanner setCharactersToBeSkipped:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]];
     int connectionPort = -1;
     [scanner scanInt:&connectionPort];
+    // Uses a RegEx to pull the Noam host IP out of the address string.
     __block NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
     NSString *regExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
     NSError *error = NULL;
@@ -84,24 +108,26 @@ static const NSInteger kNoamWebsocketsPort = 8089;
                                   regularExpressionWithPattern:regExPattern
                                   options:NSRegularExpressionCaseInsensitive
                                   error:&error];
-    [regex enumerateMatchesInString:hostAddr options:0 range:NSMakeRange(0, [hostAddr length]) usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
+    [regex enumerateMatchesInString:hostAddr
+                            options:0
+                              range:NSMakeRange(0, [hostAddr length])
+                         usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
         hostAddr = [hostAddr substringWithRange:[match range]];
     }];
     if (!hostAddr || connectionPort < 0) {
         return;
     }
-    self.udpSocket = nil;
     if (!self.websocket) {
         [self connectWebSocketsToHost:hostAddr];
+        [sock close];
+        self.udpSocket = nil;
     }
-}
-
--(void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag {
-    
 }
 
 -(void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
     self.udpSocket = nil;
+    [self disconnectFromNoam];
+    [self.delegate noamLemma:self didFailToConnectWithError:error];
 }
 
 #pragma mark - WebSockets
@@ -116,7 +142,13 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 #pragma mark - SRWebSocketDelegate Methods
 
 -(void)webSocketDidOpen:(SRWebSocket *)webSocket {
-    NSArray *registrationMessage = @[@"register", @"iosClient", @0, @[@"test"], @[@"test"], @"objective-c", @"0.1"];
+    NSArray *registrationMessage = @[@"register",
+                                     @"iosClient",
+                                     @0,
+                                     @[@"test"],
+                                     @[@"test"],
+                                     @"objective-c",
+                                     @"0.1"];
     NSData *sendData = [self messageDataForMessageArray:registrationMessage];
     NSString *messageString = [[NSString alloc] initWithData:sendData encoding:NSUTF8StringEncoding];
     NSLog(@"%@", messageString);

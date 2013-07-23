@@ -111,7 +111,7 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
-    
+    NSLog(@"%@", message);
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
