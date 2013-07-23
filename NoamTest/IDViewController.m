@@ -13,24 +13,18 @@
 #import "IDNoamLemma.h"
 
 @interface IDViewController () <IDNoamDelegate>
-
-@property (nonatomic, strong) IDNoamLemma *lemma;
-
 @end
 
 @implementation IDViewController
 
-static const uint16_t kNoamUDPBroadcastPort = 1033;
-static const NSInteger kNoamWebsocketsPort = 8089;
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.lemma = [IDNoamLemma sharedLemmaWithClientName:@"ios"
-                                             hearsArray:@[@"timestamp"]
-                                             playsArray:@[@"timestamp"]];
-    self.lemma.delegate = self;
-    [self.lemma connectToNoam];
+    IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:@"ios"
+                                                     hearsArray:@[@"timestamp"]
+                                                     playsArray:@[@"timestamp"]];
+    lemma.delegate = self;
+    [lemma connectToNoam];
 }
 
 - (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma {
@@ -44,7 +38,7 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 
 - (void)sendTimestamp {
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
-    [self.lemma sendData:@(timestamp) forEventName:@"timestamp"];
+    [[IDNoamLemma sharedLemma] sendData:@(timestamp) forEventName:@"timestamp"];
 }
 
 @end

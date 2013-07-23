@@ -6,6 +6,18 @@
 //  Copyright (c) 2013 IDEO LLC. All rights reserved.
 //
 
+/**
+ IDNoamLemma is an Objective-C implementation of a Noam client. It can be used to quickly and simply
+ discover a noam server and interact with it.
+ 
+ To start, initialize the shared lemma using `sharedLemmsWithClientName:hearsArray:playsArray`.
+ This will create a global shared object for easy access from any class (it is created using a
+ singleton initializer). Connect a `delegate` to receive events and data, and send events using
+ `sendData:forEventName:`.
+ 
+ Email timshi@ideo.com with any questions!
+ */
+
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
