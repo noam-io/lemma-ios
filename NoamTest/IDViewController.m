@@ -12,11 +12,8 @@
 #import <SocketRocket/SRWebSocket.h>
 #import "IDNoamLemma.h"
 
-@interface IDViewController () <GCDAsyncUdpSocketDelegate, SRWebSocketDelegate, IDNoamDelegate>
+@interface IDViewController () <IDNoamDelegate>
 
-@property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
-@property (nonatomic) dispatch_queue_t delegateQueue;
-@property (nonatomic, strong) SRWebSocket *websocket;
 @property (nonatomic, strong) IDNoamLemma *lemma;
 
 @end
@@ -29,13 +26,25 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.lemma = [IDNoamLemma sharedLemmaWithClientName:@"ios" hearsArray:@[@"test"] playsArray:@[@"test"]];
+    self.lemma = [IDNoamLemma sharedLemmaWithClientName:@"ios"
+                                             hearsArray:@[@"timestamp"]
+                                             playsArray:@[@"timestamp"]];
     self.lemma.delegate = self;
     [self.lemma connectToNoam];
 }
 
+- (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma {
+    [self sendTimestamp];
+}
+
 - (void)noamLemma:(IDNoamLemma *)lemma didReceiveData:(id)data fromLemma:(NSString *)fromLemma forEvent:(NSString *)event {
-    
+    NSLog(@"Event: %@\nSender: %@\nData: %@", event, fromLemma, data);
+    [self sendTimestamp];
+}
+
+- (void)sendTimestamp {
+    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+    [self.lemma sendData:@(timestamp) forEventName:@"timestamp"];
 }
 
 @end

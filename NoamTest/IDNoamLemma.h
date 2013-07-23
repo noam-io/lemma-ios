@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
 @optional
 - (void)noamLemma:(IDNoamLemma *)lemma didFailToConnectWithError:(NSError *)error;
 - (void)noamLemma:(IDNoamLemma *)lemma connectionDidCloseWithReason:(NSString *)reason;
+- (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma;
 - (void)noamLemma:(IDNoamLemma *)lemma
    didReceiveData:(id)data
         fromLemma:(NSString *)fromLemma
@@ -37,10 +38,11 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
 
 - (void)connectToNoam;
 - (void)disconnectFromNoam;
+- (void)sendData:(id)data forEventName:(NSString *)eventName;
 
-@property (nonatomic, readonly) IDNoamLemmaReadyState readyState;
 @property (nonatomic, copy) NSString *clientName;
 @property (nonatomic, strong) NSArray *hears, *plays;
+@property (nonatomic, readonly) IDNoamLemmaReadyState readyState;
 @property (nonatomic, weak) id <IDNoamDelegate> delegate;
 
 @end

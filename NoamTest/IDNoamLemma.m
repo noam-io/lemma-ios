@@ -95,12 +95,26 @@ static NSString * const kNoamEventKey = @"event";
 }
 
 - (NSData *)messageDataForMessageArray:(NSArray *)messageArray {
+    if (![NSJSONSerialization isValidJSONObject:messageArray]) {
+        return nil;
+    }
     NSData *sendData = [NSJSONSerialization dataWithJSONObject:messageArray options:0 error:nil];
     NSString *dataString = [[NSString alloc] initWithData:sendData encoding:NSUTF8StringEncoding];
     NSString *lengthString = [NSString stringWithFormat:@"%06d", sendData.length];
     NSString *sendString = [lengthString stringByAppendingString:dataString];
     sendData = [sendString dataUsingEncoding:NSUTF8StringEncoding];
     return sendData;
+}
+
+- (void)sendData:(id)data forEventName:(NSString *)eventName {
+    NSArray *eventArray = @[kNoamEventKey,
+                            self.clientName,
+                            eventName,
+                            data];
+    NSData *sendData = [self messageDataForMessageArray:eventArray];
+    if (sendData) {
+        [self.websocket send:sendData];
+    }
 }
 
 -(void)dealloc {
@@ -179,6 +193,9 @@ static NSString * const kNoamEventKey = @"event";
                                      @(kNoamClientVersion)];
     NSData *sendData = [self messageDataForMessageArray:registrationMessage];
     [self.websocket send:sendData];
+    if ([self.delegate respondsToSelector:@selector(noamLemmaDidConnectToNoamServer:)]) {
+        [self.delegate noamLemmaDidConnectToNoamServer:self];
+    }
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
