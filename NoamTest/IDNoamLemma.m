@@ -23,9 +23,23 @@
 
 static const uint16_t kNoamUDPBroadcastPort = 1033;
 static const NSInteger kNoamWebsocketsPort = 8089;
+static NSString * const kNoamDefaultClientName = @"obj-c-client";
 
 + (instancetype)lemma {
-    return [[self alloc] init];
+    return [self lemmaWithClientName:nil hearsArray:@[] playsArray:@[]];
+}
+
++ (instancetype)lemmaWithClientName:(NSString *)clientName
+                         hearsArray:(NSArray *)hears
+                         playsArray:(NSArray *)plays {
+    IDNoamLemma *lemma = [[self alloc] init];
+    clientName = (clientName) ? clientName : [kNoamDefaultClientName stringByAppendingFormat:@"-%d", (rand() % 1000)];
+    hears = (hears) ? hears : @[];
+    plays = (plays) ? plays : @[];
+    lemma.clientName = clientName;
+    lemma.hears = hears;
+    lemma.plays = plays;
+    return lemma;
 }
 
 - (id)init {
@@ -117,17 +131,19 @@ static const NSInteger kNoamWebsocketsPort = 8089;
     if (!hostAddr || connectionPort < 0) {
         return;
     }
+    [sock close];
+    self.udpSocket = nil;
     if (!self.websocket) {
         [self connectWebSocketsToHost:hostAddr];
-        [sock close];
-        self.udpSocket = nil;
     }
 }
 
 -(void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
     self.udpSocket = nil;
-    [self disconnectFromNoam];
-    [self.delegate noamLemma:self didFailToConnectWithError:error];
+    if (!self.websocket) {
+        [self disconnectFromNoam];
+        [self.delegate noamLemma:self didFailToConnectWithError:error];
+    }
 }
 
 #pragma mark - WebSockets
@@ -156,15 +172,30 @@ static const NSInteger kNoamWebsocketsPort = 8089;
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
-    
+    static NSString * const kNoamEventKey = @"event";
+    if ([message isKindOfClass:[NSString class]]) {
+        NSData *dataFromString = [((NSString *)message) dataUsingEncoding:NSUTF8StringEncoding];
+        id jsonObj = [NSJSONSerialization JSONObjectWithData:dataFromString options:0 error:nil];
+        if ([jsonObj isKindOfClass:[NSArray class]]) {
+            NSArray *jsonArray = (NSArray *)jsonObj;
+            if ([jsonArray[0] isEqualToString:kNoamEventKey]) {
+                NSString *lemmaID = jsonArray[1];
+                NSString *eventName = jsonArray[2];
+                id eventData = jsonArray[3];
+                [self.delegate noamLemma:self didReceiveData:eventData fromLemma:lemmaID forEvent:eventName];
+            }
+        }
+    }
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    
+//    [self disconnectFromNoam];
+//    [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
 }
 
 -(void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
-    
+    [self disconnectFromNoam];
+    [self.delegate noamLemma:self didFailToConnectWithError:error];
 }
 
 @end
