@@ -175,7 +175,7 @@ static NSString * const kNoamEventKey = @"event";
 #pragma mark - WebSockets
 
 - (void)connectWebSocketsToHost:(NSString *)host {
-    NSString *fullURLString = [NSString stringWithFormat:@"ws://%@:%d/websocket",host, kNoamWebsocketsPort];
+    NSString *fullURLString = [NSString stringWithFormat:@"ws://%@:%@/websocket",host, @(kNoamWebsocketsPort)];
     self.websocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:fullURLString]];
     self.websocket.delegate = self;
     [self.websocket open];
