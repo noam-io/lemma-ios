@@ -52,6 +52,20 @@ To send data:
 - All dictionary keys are instances of `NSString`.
 - Numbers are not `NaN` or infinity.
 
+### Notifications
+It's also possible to sign up for notifications to receive the Noam events. See below:  
+```objc
+extern NSString * const IDNoamLemmaConnectionFailedNotification;    // Connection error.
+extern NSString * const IDNoamLemmaErrorKey;                        // Returns the NSError for the connection failure.
+extern NSString * const IDNoamLemmaConnectionClosedNotification;    // Connection closed.
+extern NSString * const IDNoamLemmaConnectionClosedReasonKey;       // NSString connection closed reason.
+extern NSString * const IDNoamLemmaDidConnectNotification;          // Lemma connected to Noam.
+extern NSString * const IDNoamLemmaDidReceiveDataNotification;      // Data received from a plays broadcast.
+extern NSString * const IDNoamLemmaDataKey;                         // id data from the event (NSString | NSArray | NSDictionary).
+extern NSString * const IDNoamLemmaFromLemmaKey;                    // The lemma that played the event (NSString).
+extern NSString * const IDNoamLemmaEventKey;                        // Played event name (NSString).
+```
+
 ## Dependencies
 This project does have two major dependencies, [SocketRocket](https://github.com/square/SocketRocket) and [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket). Please make sure to install via CocoaPods to ensure the depencies are installed.  
 
