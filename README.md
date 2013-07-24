@@ -39,5 +39,8 @@ To send data:
 [[IDNoamLemma sharedLemma] sendData:@[@EXAMPLE_ARRAY_OF_DATA] forEventName:@"MY_EVENT"];
 ```
 
+## Dependencies
+This project does have two major dependencies, [SocketRocket](https://github.com/square/SocketRocket) and [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket). Please make sure to install via CocoaPods to ensure the depencies are installed.  
+
 ## Questions?  
 timshi@ideo.com
