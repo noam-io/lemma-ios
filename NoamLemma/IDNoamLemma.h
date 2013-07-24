@@ -12,7 +12,7 @@
  
  IDNoamLemma can be installed by simply 
  
- To start, initialize the shared lemma using `sharedLemmsWithClientName:hearsArray:playsArray`.
+ To start, initialize the shared lemma using `sharedLemmaWithClientName:hearsArray:playsArray`.
  This will create a global shared object for easy access from any class (it is created using a
  singleton initializer). Connect a `delegate` to receive events and data, and send events using
  `sendData:forEventName:`.
