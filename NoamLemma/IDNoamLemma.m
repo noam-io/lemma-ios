@@ -35,11 +35,11 @@
 
 
 NSString * const IDNoamLemmaConnectionFailedNotification = @"IDNoamLemmaConnectionFailedNotification";
+NSString * const IDNoamLemmaErrorKey = @"IDNoamLemmaErrorKey";
 NSString * const IDNoamLemmaConnectionClosedNotification= @"IDNoamLemmaConnectionClosedNotification";
+NSString * const IDNoamLemmaConnectionClosedReasonKey = @"IDNoamLemmaConnectionClosedReasonKey";
 NSString * const IDNoamLemmaDidConnectNotification = @"IDNoamLemmaDidConnectNotification";
 NSString * const IDNoamLemmaDidReceiveDataNotification = @"IDNoamLemmaDidReceiveDataNotification";
-NSString * const IDNoamLemmaConnectionClosedReasonKey = @"IDNoamLemmaConnectionClosedReasonKey";
-NSString * const IDNoamLemmaErrorKey = @"IDNoamLemmaErrorKey";
 NSString * const IDNoamLemmaDataKey = @"IDNoamLemmaDataKey";
 NSString * const IDNoamLemmaFromLemmaKey = @"IDNoamLemmaFromLemmaKey";
 NSString * const IDNoamLemmaEventKey = @"IDNoamLemmaEventKey";
