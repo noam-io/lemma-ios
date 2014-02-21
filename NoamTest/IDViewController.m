@@ -48,11 +48,11 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     [self.view addGestureRecognizer:self.tapRecognizer];
     
     /* [demo] message lable to confirm test results */
-    self.label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width/2, 80/2)];
+    self.label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 120/2)];
     [self.view addSubview:self.label];
     self.label.textColor = [UIColor colorWithWhite:0 alpha:1.0];
     self.label.textAlignment = NSTextAlignmentCenter;
-    self.label.numberOfLines = 2;
+    self.label.numberOfLines = 0;
     self.label.font = [UIFont boldSystemFontOfSize:22/2];
     self.label.hidden = YES;
 }
@@ -75,11 +75,16 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
         data[kLemmaEventKeyPos]) {
         CGPoint pos = CGPointMake([data[kLemmaEventKeyPos][0] floatValue], [data[kLemmaEventKeyPos][1] floatValue]);
         self.label.center = pos;
-        self.label.text = [NSString stringWithFormat:@"x: %.0f, y: %.0f\nt: %@", pos.x, pos.y, data[kLemmaEventKeyTimestamp]];
+        self.label.text = [NSString stringWithFormat:@"x: %.0f, y: %.0f\n"
+                           "t: %@",
+                           pos.x,
+                           pos.y,
+                           data[kLemmaEventKeyTimestamp]];
         self.label.hidden = NO;
         [self.view setNeedsDisplay];
     }
     else {
+        self.label.center = self.view.center;
         self.label.text = [NSString stringWithFormat:@"RECEIVED: %@", data];
         self.label.hidden = NO;
         [self.view setNeedsDisplay];
