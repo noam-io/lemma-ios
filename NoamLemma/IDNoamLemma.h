@@ -6,44 +6,25 @@
 //  Copyright (c) 2013 IDEO LLC. All rights reserved.
 //
 
-/**
- IDNoamLemma is an Objective-C implementation of a Noam client. It can be used to quickly and simply
- discover a noam server and interact with it.
- 
- IDNoamLemma can be installed by simply 
- 
- To start, initialize the shared lemma using `sharedLemmaWithClientName:hearsArray:playsArray`.
- This will create a global shared object for easy access from any class (it is created using a
- singleton initializer). Connect a `delegate` to receive events and data, and send events using
- `sendData:forEventName:`.
- 
- Email timshi@ideo.com with any questions!
- */
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
-    IDNoamLemmaNotConnected,
-    IDNoamLemmaConnecting,
-    IDNoamLemmaConnected
-};
 
 @class IDNoamLemma;
 
 @protocol IDNoamDelegate <NSObject>
 
 @optional
+- (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma;
+- (void)noamLemma:(IDNoamLemma *)lemma didReceiveData:(id)data fromLemma:(NSString *)fromLemma forEvent:(NSString *)event;
 - (void)noamLemma:(IDNoamLemma *)lemma didFailToConnectWithError:(NSError *)error;
 - (void)noamLemma:(IDNoamLemma *)lemma connectionDidCloseWithReason:(NSString *)reason;
-- (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma;
-- (void)noamLemma:(IDNoamLemma *)lemma
-   didReceiveData:(id)data
-        fromLemma:(NSString *)fromLemma
-         forEvent:(NSString *)event;
 
 @end
 
+
 @interface IDNoamLemma : NSObject
+
 
 /**
  @name Accessing the shared lemma
@@ -60,6 +41,7 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
  */
 + (instancetype)sharedLemma;
 
+
 /** Accessor for the shared lemma with parameters..
  
  If the shared lemma hasn't been initialized, this will init the lemma with the given
@@ -67,15 +49,19 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
  in parameters.
  
  @param clientName The client name registered on the Noam network.
+ @param serverName The Noam server name (room name).
  @param hears An array of strings representing the heard events.
  @param plays An array of strings representing the played events.
+ @param delegate IDNoamDelegate.
  @returns The shared singleton lemma.
  @warning If you change the parameters after initializing, you must disconnect & reconnect.
  
  */
 + (instancetype)sharedLemmaWithClientName:(NSString *)clientName
+                               serverName:(NSString *)serverName
                                hearsArray:(NSArray *)hears
-                               playsArray:(NSArray *)plays;
+                               playsArray:(NSArray *)plays
+                                 delegate:(id<IDNoamDelegate>)delegate;
 
 /** 
  @name Communicating with Noam
@@ -84,12 +70,14 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
 /**
  Initiate the connection with the Noam server.
  */
-- (void)connectToNoam;
+- (void)connect;
+
 
 /**
  Disconnect from the Noam server and close all connections.
  */
-- (void)disconnectFromNoam;
+- (void)disconnect;
+
 
 /** Send an event to the Noam network.
  
@@ -103,9 +91,5 @@ typedef NS_ENUM(NSInteger, IDNoamLemmaReadyState) {
  */
 - (void)sendData:(id)data forEventName:(NSString *)eventName;
 
-@property (nonatomic, copy) NSString *clientName;
-@property (nonatomic, strong) NSArray *hears, *plays;
-@property (nonatomic, readonly) IDNoamLemmaReadyState readyState;
-@property (nonatomic, weak) id <IDNoamDelegate> delegate;
 
 @end
