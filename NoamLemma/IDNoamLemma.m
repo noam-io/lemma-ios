@@ -21,11 +21,12 @@
 
 @implementation IDNoamLemma
 
-static const NSInteger kNoamClientVersion = 0.1;
-static const uint16_t kNoamUDPBroadcastPort = 1033;
+static const CGFloat kNoamClientVersion = 0.1;
+static const uint16_t kNoamUDPBroadcastPort = 1032;
 static const NSInteger kNoamWebsocketsPort = 8089;
 static NSString * const kNoamDefaultClientName = @"obj-c-client";
 static NSString * const kNoamClientLibraryName = @"obj-c";
+static NSString * const kNoamClientBroadcastKey = @"marco";
 static NSString * const kNoamRegisterKey = @"register";
 static NSString * const kNoamEventKey = @"event";
 
@@ -92,7 +93,49 @@ static NSString * const kNoamEventKey = @"event";
     self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:self.delegateQueue];
     [self.udpSocket bindToPort:kNoamUDPBroadcastPort error:nil];
     [self.udpSocket beginReceiving:nil];
+    
+    NSError *error;
+    if (![self.udpSocket enableBroadcast:YES error:&error]) {
+        NSLog(@"ERROR: UDP broadcast disabled: %@", error);
+        return;
+    }
+    else {
+        /* Broadcast to 1030, every 5 seconds.
+         * ["marco", <Lemma_name>, <RoomName>, <dialect>, <system version>]
+         */
+        [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(sendUDPBroadcast) userInfo:nil repeats:YES];
+    }
 }
+
+- (void)sendUDPBroadcast
+{
+    static unsigned long counter;
+    NSArray *udpBoradcastMessage = @[kNoamClientBroadcastKey,
+                                     self.clientName,
+                                     @"iOS_test_room",
+                                     kNoamClientLibraryName,
+                                     @(kNoamClientVersion)
+                                     ];
+    NSData *udpData = [self messageDataForLemmaBroadcastArray:udpBoradcastMessage];
+    NSLog(@"sending lemma UDP broadcast [%lu]: %@", counter++, udpBoradcastMessage);
+    [self.udpSocket sendData:udpData
+                      toHost:@"255.255.255.255"
+                        port:1030
+                 withTimeout:4
+                         tag:0];
+}
+
+
+- (NSData *)messageDataForLemmaBroadcastArray:(NSArray *)messageArray {
+    if (![NSJSONSerialization isValidJSONObject:messageArray]) {
+        return nil;
+    }
+    NSData *sendData = [NSJSONSerialization dataWithJSONObject:messageArray options:0 error:nil];
+    NSString *dataString = [[NSString alloc] initWithData:sendData encoding:NSUTF8StringEncoding];
+    sendData = [dataString dataUsingEncoding:NSUTF8StringEncoding];
+    return sendData;
+}
+
 
 - (NSData *)messageDataForMessageArray:(NSArray *)messageArray {
     if (![NSJSONSerialization isValidJSONObject:messageArray]) {
@@ -133,6 +176,7 @@ static NSString * const kNoamEventKey = @"event";
 -(void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext {
     static NSString * const kIPRegExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
     NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"received UDP data: %@", message);
     // Old code that grabs the connection port from Noam. Not relevant if we're connecting via WebSockets,
     // but may be useful in the future if we switch back to TCP.
     NSScanner *scanner = [NSScanner scannerWithString:message];
@@ -141,6 +185,8 @@ static NSString * const kNoamEventKey = @"event";
     [scanner scanInt:&connectionPort];
     // Uses a RegEx to pull the Noam host IP out of the address string.
     __block NSString *hostAddr = [GCDAsyncUdpSocket hostFromAddress:address];
+    NSLog(@"hostAddr from UDP: %@", hostAddr);
+    NSLog(@"connectionPort from UDP: %d", connectionPort);
     NSError *error = NULL;
     NSRegularExpression *regex = [NSRegularExpression
                                   regularExpressionWithPattern:kIPRegExPattern
@@ -152,17 +198,35 @@ static NSString * const kNoamEventKey = @"event";
                          usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
         hostAddr = [hostAddr substringWithRange:[match range]];
     }];
+    NSLog(@"hostAddr after regex matching: %@", hostAddr);
     if (!hostAddr || connectionPort < 0) {
         return;
     }
-    [sock close];
-    self.udpSocket = nil;
+//    [sock close];
+//    self.udpSocket = nil;
     if (!self.websocket) {
         [self connectWebSocketsToHost:hostAddr];
     }
 }
 
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didConnectToAddress:(NSData *)address
+{
+    NSLog(@"UDP socket did connect");
+}
+
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didSendDataWithTag:(long)tag
+{
+    NSLog(@"UDP sent data");
+}
+
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didNotSendDataWithTag:(long)tag dueToError:(NSError *)error
+{
+    NSLog(@"UDP failed to send data: %@", error);
+}
+
+
 -(void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
+    NSLog(@"UDP socket closed");
     self.udpSocket = nil;
     if (!self.websocket) {
         [self disconnectFromNoam];
@@ -175,7 +239,13 @@ static NSString * const kNoamEventKey = @"event";
 #pragma mark - WebSockets
 
 - (void)connectWebSocketsToHost:(NSString *)host {
+    
+    if (nil != self.websocket) {
+        return;
+    }
+    
     NSString *fullURLString = [NSString stringWithFormat:@"ws://%@:%@/websocket",host, @(kNoamWebsocketsPort)];
+    NSLog(@"connecting webSocket: %@", fullURLString);
     self.websocket = [[SRWebSocket alloc] initWithURL:[NSURL URLWithString:fullURLString]];
     self.websocket.delegate = self;
     [self.websocket open];
@@ -184,6 +254,7 @@ static NSString * const kNoamEventKey = @"event";
 #pragma mark - SRWebSocketDelegate Methods
 
 -(void)webSocketDidOpen:(SRWebSocket *)webSocket {
+    NSLog(@"web socket did open, sending registration");
     NSArray *registrationMessage = @[kNoamRegisterKey,
                                      self.clientName,
                                      @0,
@@ -191,6 +262,7 @@ static NSString * const kNoamEventKey = @"event";
                                      self.plays,
                                      kNoamClientLibraryName,
                                      @(kNoamClientVersion)];
+    NSLog(@"registration message: %@", registrationMessage);
     NSData *sendData = [self messageDataForMessageArray:registrationMessage];
     [self.websocket send:sendData];
     if ([self.delegate respondsToSelector:@selector(noamLemmaDidConnectToNoamServer:)]) {

@@ -28,6 +28,7 @@
 }
 
 - (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma {
+    NSLog(@"noamLemmaDidConnectToNoamServer");
     [self sendTimestamp];
 }
 
