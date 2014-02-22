@@ -21,22 +21,30 @@ pod install
 ```
 and you'll be all set up!
 
+Alternatively, you can add IDNoamLemma.h and IDNoamLemma.m to your project, and make sure you have [SocketRocket](https://github.com/square/SocketRocket) and [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket). Add the following line to your code and you are ready to go:
+
+```objc
+#import "IDNoamLemma.h"
+```
+
+
 ## Usage
 
 The Noam lemma is initialized as a global singleton that can be easily accessed from any class. Follow these steps to create the Noam lemma and connect to the server:
 ```objc
-IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:@"YOUR_CLIENT_NAME"
-                                                     hearsArray:@[@"YOUR_HEARS"]
-                                                     playsArray:@[@"YOUR_PLAYS"]];
-lemma.delegate = self;
-[lemma connectToNoam];
+IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:@"UniqueLemmaID"
+                                                 serverName:@"NoamServerName"
+                                                 hearsArray:@[@"listenEventName1", @"listenEventName2", @"listenEventName3"]
+                                                 playsArray:@[@"sendEventName1", @"sendEventName2"]
+                                                   delegate:self];
+[lemma connect];
 ```
 
 The Lemma will notify the delegate of connection success & data receipt via the delegate methods.  
 
 To send data:
 ```objc
-[[IDNoamLemma sharedLemma] sendData:@[@EXAMPLE_ARRAY_OF_DATA] forEventName:@"MY_EVENT"];
+[[IDNoamLemma sharedLemma] sendData:@[/*EXAMPLE_ARRAY_OF_DATA*/] forEventName:@"sendEventName1"];
 ```
 
 ## Dependencies
