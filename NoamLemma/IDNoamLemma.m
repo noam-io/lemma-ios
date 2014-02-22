@@ -34,6 +34,7 @@
 static const CGFloat kNoamClientVersion = 0.1;
 static const uint16_t kNoamUDPBroadcastPort = 1032;
 static const NSInteger kNoamWebsocketsPort = 8089;
+static NSString * const kNoamUDPBroadcastPrefixPattern = @"[\"polo\",";
 static const uint16_t kLemmaUDPBroadcastPort = 1030;
 static NSString * const kLemmaUDPBroadcastAddress = @"255.255.255.255";
 static const NSInteger kLemmaUDPBroadcastInterval = 5;
@@ -209,6 +210,11 @@ static NSString * const kNoamEventKey = @"event";
     static NSString * const kIPRegExPattern = @"\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b";
     NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSLog(@"received UDP data: %@", message);
+    NSRange search = [message rangeOfString:kNoamUDPBroadcastPrefixPattern];
+    if (0 != search.location) {
+        /* ignore everything except polo messages */
+        return;
+    }
     NSScanner *scanner = [NSScanner scannerWithString:message];
     [scanner setCharactersToBeSkipped:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]];
     int connectionPort = -1;
