@@ -34,7 +34,7 @@
 static const CGFloat kNoamClientVersion = 0.1;
 static const uint16_t kNoamUDPBroadcastPort = 1032;
 static const NSInteger kNoamWebsocketsPort = 8089;
-static const uint16_t kLemmaUDPBroadcastProt = 1030;
+static const uint16_t kLemmaUDPBroadcastPort = 1030;
 static NSString * const kLemmaUDPBroadcastAddress = @"255.255.255.255";
 static const NSInteger kLemmaUDPBroadcastInterval = 5;
 static NSString * const kNoamDefaultClientName = @"iOS-client";
@@ -95,6 +95,7 @@ static NSString * const kNoamEventKey = @"event";
 
 
 - (void)connect {
+    [self disconnect];
     [self beginFindingNoam];
 }
 
@@ -144,7 +145,7 @@ static NSString * const kNoamEventKey = @"event";
     NSData *udpData = [self messageDataForLemmaBroadcastArray:udpBoradcastMessage];
     [self.udpSocket sendData:udpData
                       toHost:kLemmaUDPBroadcastAddress
-                        port:kLemmaUDPBroadcastProt
+                        port:kLemmaUDPBroadcastPort
                  withTimeout:kLemmaUDPBroadcastInterval - 1
                          tag:0];
 }
@@ -243,12 +244,13 @@ static NSString * const kNoamEventKey = @"event";
 
 -(void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
     NSLog(@"UDP socket closed");
-    self.udpSocket = nil;
-    if (!self.websocket) {
-        [self disconnect];
-        if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
-            [self.delegate noamLemma:self didFailToConnectWithError:error];
-        }
+    [self disconnect];
+    if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
+        [self.delegate noamLemma:self didFailToConnectWithError:error];
+    }
+    else {
+        NSLog(@"reconnecting ...");
+        [self connect];
     }
 }
 
