@@ -78,6 +78,8 @@
  */
 - (void)disconnect;
 
+- (void)suspend;
+
 
 /** Send an event to the Noam network.
  

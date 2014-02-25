@@ -24,6 +24,7 @@
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SRWebSocket *websocket;
+@property (nonatomic, assign) BOOL suspended;
 
 @end
 
@@ -96,12 +97,13 @@ static NSString * const kNoamEventKey = @"event";
 
 
 - (void)connect {
-    [self disconnect];
+    NSLog(@"connecting to NOAM ...");
     [self beginFindingNoam];
 }
 
 
 - (void)disconnect {
+    NSLog(@"disconnect from NOAM");
     if (self.udpSocket) {
         [self.udpSocket close];
         self.udpSocket = nil;
@@ -113,7 +115,15 @@ static NSString * const kNoamEventKey = @"event";
 }
 
 
+- (void)suspend {
+    NSLog(@"suspend");
+    self.suspended = YES;
+    [self disconnect];
+}
+
+
 - (void)beginFindingNoam {
+    self.suspended = NO;
     self.udpSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:self.delegateQueue];
     [self.udpSocket bindToPort:kNoamUDPBroadcastPort error:nil];
     [self.udpSocket beginReceiving:nil];
@@ -250,13 +260,20 @@ static NSString * const kNoamEventKey = @"event";
 
 -(void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
     NSLog(@"UDP socket closed");
-    [self disconnect];
-    if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
-        [self.delegate noamLemma:self didFailToConnectWithError:error];
+    if (YES == self.suspended) {
+        /* suspended when app goes into background mode, do nothing */
+        NSLog(@"suspended");
     }
     else {
-        NSLog(@"reconnecting ...");
-        [self connect];
+        /* unexpected disconnect, drop everything, either call user delegate or try to re-connect */
+        [self disconnect];
+        if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
+            [self.delegate noamLemma:self didFailToConnectWithError:error];
+        }
+        else {
+            NSLog(@"reconnecting ...");
+            [self connect];
+        }
     }
 }
 
@@ -319,6 +336,7 @@ static NSString * const kNoamEventKey = @"event";
 
 
 -(void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
+    NSLog(@"web socket closed");
     [self disconnect];
     if ([self.delegate respondsToSelector:@selector(noamLemma:connectionDidCloseWithReason:)]) {
         [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
@@ -327,6 +345,7 @@ static NSString * const kNoamEventKey = @"event";
 
 
 -(void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
+    NSLog(@"web socket failed");
     [self disconnect];
     if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
         [self.delegate noamLemma:self didFailToConnectWithError:error];

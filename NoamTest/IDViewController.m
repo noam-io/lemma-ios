@@ -58,7 +58,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
 }
 
 
-#pragma mark - IDNoamDelegate
+#pragma mark - IDNoamDelegate example
 
 
 - (void)noamLemmaDidConnectToNoamServer:(IDNoamLemma *)lemma {
