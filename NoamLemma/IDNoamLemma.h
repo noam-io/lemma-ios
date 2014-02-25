@@ -78,6 +78,10 @@
  */
 - (void)disconnect;
 
+
+/**
+ used to disconnect when app goes to background state
+ */
 - (void)suspend;
 
 

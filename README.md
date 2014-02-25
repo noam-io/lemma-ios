@@ -15,13 +15,13 @@ pod 'objc-lemma'
 ```
 to your ```Podfile```.  
 
-Then run:
+Then run (if you do not have [ideo-pods](https://github.com/ideo/ideo-pods), this still works):
 ```bash
 pod install
 ```
 and you'll be all set up!
 
-Alternatively, you can add IDNoamLemma.h and IDNoamLemma.m to your project, and make sure you have [SocketRocket](https://github.com/square/SocketRocket) and [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket). Add the following line to your code and you are ready to go:
+Alternatively, you can add `IDNoamLemma.h` and `IDNoamLemma.m` to your project, and make sure you have [SocketRocket](https://github.com/square/SocketRocket) and [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket). Add the following line to your code and you are ready to go:
 
 ```objc
 #import "IDNoamLemma.h"
@@ -44,8 +44,13 @@ The Lemma will notify the delegate of connection success & data receipt via the 
 
 To send data:
 ```objc
-[[IDNoamLemma sharedLemma] sendData:@[/*EXAMPLE_ARRAY_OF_DATA*/] forEventName:@"sendEventName1"];
+[[IDNoamLemma sharedLemma] sendData:@/*_JSON_SERIALIZABLE_DATA_*/ forEventName:@"sendEventName1"];
 ```
+`NSJSONSerialization` is used to encode data, which requires:
+- The top level object is an `NSArray` or `NSDictionary`.
+- All objects are instances of `NSString`, `NSNumber`, `NSArray`, `NSDictionary`, or `NSNull`.
+- All dictionary keys are instances of `NSString`.
+- Numbers are not `NaN` or infinity.
 
 ## Dependencies
 This project does have two major dependencies, [SocketRocket](https://github.com/square/SocketRocket) and [CocoaAsyncSocket](https://github.com/robbiehanson/CocoaAsyncSocket). Please make sure to install via CocoaPods to ensure the depencies are installed.  
