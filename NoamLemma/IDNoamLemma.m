@@ -24,6 +24,7 @@
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 @property (nonatomic) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SRWebSocket *websocket;
+@property (nonatomic, strong) NSTimer *broadcastTimer;
 @property (nonatomic, assign) BOOL suspended;
 
 @end
@@ -119,6 +120,7 @@ static NSString * const kNoamEventKey = @"event";
     NSLog(@"suspend");
     self.suspended = YES;
     [self disconnect];
+    [self unScheduleUDPBroadcast];
 }
 
 
@@ -128,21 +130,33 @@ static NSString * const kNoamEventKey = @"event";
     [self.udpSocket bindToPort:kNoamUDPBroadcastPort error:nil];
     [self.udpSocket beginReceiving:nil];
     
+    [self scheduleUDPBroadcast];
+}
+
+
+/* Broadcast to 1030, every 5 seconds.
+ * ["marco", <Lemma_name>, <RoomName>, <dialect>, <system version>]
+ */
+- (void)scheduleUDPBroadcast {
+    [self.broadcastTimer invalidate];
     NSError *error;
     if (![self.udpSocket enableBroadcast:YES error:&error]) {
         NSLog(@"ERROR: UDP broadcast disabled: %@", error);
         return;
     }
     else {
-        /* Broadcast to 1030, every 5 seconds.
-         * ["marco", <Lemma_name>, <RoomName>, <dialect>, <system version>]
-         */
-        [NSTimer scheduledTimerWithTimeInterval:kLemmaUDPBroadcastInterval
-                                         target:self
-                                       selector:@selector(sendUDPBroadcast)
-                                       userInfo:nil
-                                        repeats:YES];
+        self.broadcastTimer = [NSTimer scheduledTimerWithTimeInterval:kLemmaUDPBroadcastInterval
+                                                               target:self
+                                                             selector:@selector(sendUDPBroadcast)
+                                                             userInfo:nil
+                                                              repeats:YES];
     }
+}
+
+
+- (void)unScheduleUDPBroadcast {
+    [self.broadcastTimer invalidate];
+    self.broadcastTimer = nil;
 }
 
 
@@ -153,6 +167,7 @@ static NSString * const kNoamEventKey = @"event";
                                      kNoamClientLibraryName,
                                      @(kNoamClientVersion)
                                      ];
+    NSLog(@"sending UDP broadcast: %@", udpBoradcastMessage);
     NSData *udpData = [self messageDataForLemmaBroadcastArray:udpBoradcastMessage];
     [self.udpSocket sendData:udpData
                       toHost:kLemmaUDPBroadcastAddress
@@ -246,6 +261,7 @@ static NSString * const kNoamEventKey = @"event";
     if (!hostAddr || connectionPort < 0) {
         return;
     }
+    [self unScheduleUDPBroadcast];
     if (!self.websocket) {
         [self connectWebSocketsToHost:hostAddr];
     }
