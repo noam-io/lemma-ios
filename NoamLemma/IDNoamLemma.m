@@ -65,7 +65,7 @@ static NSString * const kNoamEventKey = @"event";
     dispatch_once(&onceToken, ^{
         sharedLemma = [[self alloc] init];
         sharedLemma.clientName = (clientName) ? clientName : [kNoamDefaultClientName stringByAppendingFormat:@"-%d", (rand() % 1000)];
-        sharedLemma.serverName = serverName;
+        sharedLemma.serverName = (serverName) ? serverName : @"";
         sharedLemma.hears = (hears) ? hears : @[];
         sharedLemma.plays = (plays) ? plays : @[];
         sharedLemma.delegate = delegate;
@@ -81,9 +81,6 @@ static NSString * const kNoamEventKey = @"event";
               sharedLemma.plays,
               sharedLemma.delegate);
     });
-    sharedLemma.clientName = (clientName) ? clientName : sharedLemma.clientName;
-    sharedLemma.hears = (hears) ? hears : sharedLemma.hears;
-    sharedLemma.plays = (plays) ? plays : sharedLemma.plays;
     return sharedLemma;
 }
 
