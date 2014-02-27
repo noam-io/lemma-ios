@@ -12,6 +12,9 @@
 #import "SensorTest.h"
 
 
+#define IS_PRE_IOS7                             ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1))
+
+
 static NSString * const kLemmaID = @"iOSLemmaID";
 static NSString * const kLemmaEventTypeTouch = @"iOSTouchEvent";
 static NSString * const kLemmaEventKeyPos = @"pos";
@@ -60,7 +63,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     
     /* [demo] panel displaying accelerometer and gyro data */
     self.sensorTest = [[SensorTest alloc] initWithFrame:CGRectMake(0,
-                                                                   [[UIApplication sharedApplication] statusBarFrame].size.height,
+                                                                   IS_PRE_IOS7 ? 0 : [[UIApplication sharedApplication] statusBarFrame].size.height,
                                                                    self.view.bounds.size.width,
                                                                    0)];
     [self.view addSubview:self.sensorTest];
