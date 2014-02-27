@@ -145,11 +145,13 @@ static NSString * const kNoamEventKey = @"event";
         return;
     }
     else {
-        self.broadcastTimer = [NSTimer scheduledTimerWithTimeInterval:kLemmaUDPBroadcastInterval
-                                                               target:self
-                                                             selector:@selector(sendUDPBroadcast)
-                                                             userInfo:nil
-                                                              repeats:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.broadcastTimer = [NSTimer scheduledTimerWithTimeInterval:kLemmaUDPBroadcastInterval
+                                                                   target:self
+                                                                 selector:@selector(sendUDPBroadcast:)
+                                                                 userInfo:nil
+                                                                  repeats:YES];
+        });
     }
 }
 
@@ -160,7 +162,7 @@ static NSString * const kNoamEventKey = @"event";
 }
 
 
-- (void)sendUDPBroadcast {
+- (void)sendUDPBroadcast:(NSTimer *)timer {
     NSArray *udpBoradcastMessage = @[kNoamClientBroadcastKey,
                                      self.clientName,
                                      self.serverName,
