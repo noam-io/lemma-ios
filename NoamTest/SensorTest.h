@@ -9,9 +9,15 @@
 #import <UIKit/UIKit.h>
 
 
+static NSString * const kLemmaEventTypeGyro = @"GyroValueArray";
+static NSString * const kLemmaEventTypeAccelerometer = @"AccelerometerArray";
+
+
 @interface SensorTest : UIView
 
 - (void)startMonitoring;
 - (void)stopMonitoring;
+- (void)startSendingData;
+- (void)stopSendingData;
 
 @end

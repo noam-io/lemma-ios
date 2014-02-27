@@ -44,7 +44,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:kLemmaID
                                                      serverName:@"iOS_test_room"
                                                      hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch]
-                                                     playsArray:@[kLemmaEventTypeTouch]
+                                                     playsArray:@[kLemmaEventTypeTouch, kLemmaEventTypeGyro, kLemmaEventTypeAccelerometer]
                                                        delegate:self];
     [lemma connect];
     
@@ -93,6 +93,13 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     self.label.hidden = NO;
     self.label.center = self.view.center;
     self.label.text = [NSString stringWithFormat:@"connected to NOAM on: %@", [NSDate date]];
+    [self.sensorTest startSendingData];
+}
+
+
+- (void)noamLemma:(IDNoamLemma *)lemma connectionDidCloseWithReason:(NSString *)reason
+{
+    [self.sensorTest stopSendingData];
 }
 
 

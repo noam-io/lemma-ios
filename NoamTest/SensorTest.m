@@ -8,6 +8,7 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
+#import "IDNoamLemma.h"
 #import "SensorTest.h"
 #import "GMeterView.h"
 
@@ -44,6 +45,7 @@
 
 @interface SensorTest () <CLLocationManagerDelegate>
 
+@property (nonatomic, assign) BOOL sendData;
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) CMMotionManager *motionManager;
 @property (nonatomic, strong) UILabel *speed;
@@ -279,6 +281,11 @@
     _gMeterY.value = accY;
     _gMeterZ.value = accZ;
     
+    if (YES == _sendData) {
+        [[IDNoamLemma sharedLemma] sendData:@[@(accX), @(accY), @(accZ)]
+                               forEventName:kLemmaEventTypeAccelerometer];
+    }
+    
     /* gyroscope */
     
     CGFloat rX = RPS_TO_DPS_FACTOR*[self filteredGyroComponentFromComponent:motion.rotationRate.x];
@@ -323,6 +330,11 @@
     _aMeterRow.value = roll;
     _aMeterPitch.value = pitch;
     _aMeterYaw.value = yaw;
+    
+    if (YES == _sendData) {
+        [[IDNoamLemma sharedLemma] sendData:@[@(roll), @(pitch), @(yaw)]
+                               forEventName:kLemmaEventTypeGyro];
+    }
 }
 
 
@@ -355,6 +367,18 @@
         _speed.text = [NSString stringWithFormat:@"speed: --.- m/s (--.- mph)  H: %.1f  V: %.1f",
                        location.horizontalAccuracy, location.verticalAccuracy];
     }
+}
+
+
+- (void)startSendingData
+{
+    _sendData = YES;
+}
+
+
+- (void)stopSendingData
+{
+    _sendData = NO;
 }
 
 
