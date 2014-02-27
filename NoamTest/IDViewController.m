@@ -9,6 +9,7 @@
 
 #import "IDNoamLemma.h"
 #import "IDViewController.h"
+#import "SensorTest.h"
 
 
 static NSString * const kLemmaID = @"iOSLemmaID";
@@ -21,6 +22,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
 @property (nonatomic, strong) UILabel *label;
+@property (nonatomic, strong) SensorTest *sensorTest;
 
 @end
 
@@ -55,6 +57,29 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     self.label.numberOfLines = 0;
     self.label.font = [UIFont boldSystemFontOfSize:22/2];
     self.label.hidden = YES;
+    
+    /* [demo] panel displaying accelerometer and gyro data */
+    self.sensorTest = [[SensorTest alloc] initWithFrame:CGRectMake(0,
+                                                                   [[UIApplication sharedApplication] statusBarFrame].size.height,
+                                                                   self.view.bounds.size.width,
+                                                                   0)];
+    [self.view addSubview:self.sensorTest];
+}
+
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    [self.sensorTest startMonitoring];
+}
+
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [self.sensorTest stopMonitoring];
+    
+    [super viewDidDisappear:animated];
 }
 
 

@@ -24,6 +24,8 @@
 		4BFBFAC71798CBA300E8489A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4BFBFAC51798CBA300E8489A /* InfoPlist.strings */; };
 		4BFBFAC91798CBA300E8489A /* NoamTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BFBFAC81798CBA300E8489A /* NoamTestTests.m */; };
 		4F4D3AF9AFA84320BB373068 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 78552096BE1D43B4948A54A7 /* libPods.a */; };
+		FCED950E18BFF77A000ECAA4 /* SensorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FCED950D18BFF77A000ECAA4 /* SensorTest.m */; };
+		FCED951218BFFAD5000ECAA4 /* GMeterView.m in Sources */ = {isa = PBXBuildFile; fileRef = FCED951118BFFAD5000ECAA4 /* GMeterView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +63,10 @@
 		4BFBFAC81798CBA300E8489A /* NoamTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NoamTestTests.m; sourceTree = "<group>"; };
 		78552096BE1D43B4948A54A7 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7F657A53BE8452F8AD14FFB /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
+		FCED950C18BFF77A000ECAA4 /* SensorTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorTest.h; sourceTree = "<group>"; };
+		FCED950D18BFF77A000ECAA4 /* SensorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorTest.m; sourceTree = "<group>"; };
+		FCED951018BFFAD5000ECAA4 /* GMeterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMeterView.h; sourceTree = "<group>"; };
+		FCED951118BFFAD5000ECAA4 /* GMeterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMeterView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,8 +135,8 @@
 				4BFBFAAF1798CBA300E8489A /* Main_iPad.storyboard */,
 				4BFBFAB21798CBA300E8489A /* IDViewController.h */,
 				4BFBFAB31798CBA300E8489A /* IDViewController.m */,
-				4B86412C179DFB6700AA26A0 /* IDNoamLemma.h */,
-				4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */,
+				FCED950F18BFF788000ECAA4 /* Sensors */,
+				FCED950B18BFF70A000ECAA4 /* NoamLemma */,
 				4BFBFAB51798CBA300E8489A /* Images.xcassets */,
 				4BFBFAA11798CBA300E8489A /* Supporting Files */,
 			);
@@ -164,6 +170,26 @@
 				4BFBFAC51798CBA300E8489A /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FCED950B18BFF70A000ECAA4 /* NoamLemma */ = {
+			isa = PBXGroup;
+			children = (
+				4B86412C179DFB6700AA26A0 /* IDNoamLemma.h */,
+				4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */,
+			);
+			name = NoamLemma;
+			sourceTree = "<group>";
+		};
+		FCED950F18BFF788000ECAA4 /* Sensors */ = {
+			isa = PBXGroup;
+			children = (
+				FCED950C18BFF77A000ECAA4 /* SensorTest.h */,
+				FCED950D18BFF77A000ECAA4 /* SensorTest.m */,
+				FCED951018BFFAD5000ECAA4 /* GMeterView.h */,
+				FCED951118BFFAD5000ECAA4 /* GMeterView.m */,
+			);
+			name = Sensors;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -303,6 +329,8 @@
 			files = (
 				4B86412E179DFB6700AA26A0 /* IDNoamLemma.m in Sources */,
 				4BFBFAA71798CBA300E8489A /* main.m in Sources */,
+				FCED951218BFFAD5000ECAA4 /* GMeterView.m in Sources */,
+				FCED950E18BFF77A000ECAA4 /* SensorTest.m in Sources */,
 				4BFBFAAB1798CBA300E8489A /* IDAppDelegate.m in Sources */,
 				4BFBFAB41798CBA300E8489A /* IDViewController.m in Sources */,
 			);
