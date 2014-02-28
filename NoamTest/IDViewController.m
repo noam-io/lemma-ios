@@ -7,9 +7,20 @@
 //
 
 
+
+//------------------------------------------------------------------------
+// uncomment the following line to enable accelerometer and gyroscope demo
+//------------------------------------------------------------------------
+//#define SENSOR_DEMO_ENABLED
+
+
+
 #import "IDNoamLemma.h"
 #import "IDViewController.h"
+
+#if defined(SENSOR_DEMO_ENABLED)
 #import "SensorTest.h"
+#endif
 
 
 #define IS_PRE_IOS7                             ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1))
@@ -25,7 +36,9 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapRecognizer;
 @property (nonatomic, strong) UILabel *label;
+#if defined(SENSOR_DEMO_ENABLED)
 @property (nonatomic, strong) SensorTest *sensorTest;
+#endif
 
 @end
 
@@ -44,7 +57,11 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:kLemmaID
                                                      serverName:@"iOS_test_room"
                                                      hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch]
+#if defined(SENSOR_DEMO_ENABLED)
                                                      playsArray:@[kLemmaEventTypeTouch, kLemmaEventTypeGyro, kLemmaEventTypeAccelerometer]
+#else
+                                                     playsArray:@[kLemmaEventTypeTouch]
+#endif
                                                        delegate:self];
     [lemma connect];
     
@@ -61,12 +78,14 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     self.label.font = [UIFont boldSystemFontOfSize:22/2];
     self.label.hidden = YES;
     
+#if defined(SENSOR_DEMO_ENABLED)
     /* [demo] panel displaying accelerometer and gyro data */
     self.sensorTest = [[SensorTest alloc] initWithFrame:CGRectMake(0,
                                                                    IS_PRE_IOS7 ? 0 : [[UIApplication sharedApplication] statusBarFrame].size.height,
                                                                    self.view.bounds.size.width,
                                                                    0)];
     [self.view addSubview:self.sensorTest];
+#endif
 }
 
 
@@ -74,13 +93,17 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
 {
     [super viewDidAppear:animated];
     
+#if defined(SENSOR_DEMO_ENABLED)
     [self.sensorTest startMonitoring];
+#endif
 }
 
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+#if defined(SENSOR_DEMO_ENABLED)
     [self.sensorTest stopMonitoring];
+#endif
     
     [super viewDidDisappear:animated];
 }
@@ -93,13 +116,17 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     self.label.hidden = NO;
     self.label.center = self.view.center;
     self.label.text = [NSString stringWithFormat:@"connected to NOAM on: %@", [NSDate date]];
+#if defined(SENSOR_DEMO_ENABLED)
     [self.sensorTest startSendingData];
+#endif
 }
 
 
 - (void)noamLemma:(IDNoamLemma *)lemma connectionDidCloseWithReason:(NSString *)reason
 {
+#if defined(SENSOR_DEMO_ENABLED)
     [self.sensorTest stopSendingData];
+#endif
 }
 
 
