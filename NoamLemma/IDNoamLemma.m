@@ -25,6 +25,7 @@
 @property (nonatomic) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SRWebSocket *websocket;
 @property (nonatomic, strong) NSTimer *broadcastTimer;
+@property (nonatomic, strong) NSTimer *heartbeatTimer;
 @property (nonatomic, assign) BOOL suspended;
 
 @end
@@ -45,6 +46,8 @@ static NSString * const kNoamClientLibraryName = @"iOS";
 static NSString * const kNoamClientBroadcastKey = @"marco";
 static NSString * const kNoamRegisterKey = @"register";
 static NSString * const kNoamEventKey = @"event";
+static NSString * const kNoamClientHeartbeatKey = @"heartbeat";
+static const NSInteger kNoamClientHeartbeatInterval = 5;
 
 
 #pragma mark - setup
@@ -110,6 +113,7 @@ static NSString * const kNoamEventKey = @"event";
         [self.websocket close];
         self.websocket = nil;
     }
+    [self unScheduleHeartbeat];
 }
 
 
@@ -173,6 +177,34 @@ static NSString * const kNoamEventKey = @"event";
                         port:kLemmaUDPBroadcastPort
                  withTimeout:kLemmaUDPBroadcastInterval - 1
                          tag:0];
+}
+
+
+- (void)scheduleHeartbeat
+{
+    [self.heartbeatTimer invalidate];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.heartbeatTimer = [NSTimer scheduledTimerWithTimeInterval:kNoamClientHeartbeatInterval
+                                                               target:self
+                                                             selector:@selector(sendHeartbeat:)
+                                                             userInfo:nil
+                                                              repeats:YES];
+    });
+}
+
+
+- (void)unScheduleHeartbeat
+{
+    [self.heartbeatTimer invalidate];
+    self.heartbeatTimer = nil;
+}
+
+
+- (void)sendHeartbeat:(NSTimer *)timer
+{
+    NSLog(@"sending heartbeat");
+    [[IDNoamLemma sharedLemma] sendData:[NSString stringWithFormat:@"[\"%@\",\"%@\"]", kNoamClientHeartbeatKey, self.clientName]
+                           forEventName:kNoamClientHeartbeatKey];
 }
 
 
@@ -320,13 +352,15 @@ static NSString * const kNoamEventKey = @"event";
                                      self.hears,
                                      self.plays,
                                      kNoamClientLibraryName,
-                                     @(kNoamClientVersion)];
+                                     @(kNoamClientVersion),
+                                     @{kNoamClientHeartbeatKey : @(kNoamClientHeartbeatInterval)}];
     NSLog(@"web socket did open, send registration message: %@", registrationMessage);
     NSData *sendData = [self messageDataForMessageArray:registrationMessage];
     [self.websocket send:sendData];
     if ([self.delegate respondsToSelector:@selector(noamLemmaDidConnectToNoamServer:)]) {
         [self.delegate noamLemmaDidConnectToNoamServer:self];
     }
+    [self scheduleHeartbeat];
 }
 
 
