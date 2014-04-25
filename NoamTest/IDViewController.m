@@ -20,6 +20,7 @@
 
 #import "EchoVerify.h"
 #import "SumVerify.h"
+#import "PlusOneVerify.h"
 
 #if defined(SENSOR_DEMO_ENABLED)
 #import "SensorTest.h"
@@ -59,7 +60,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     /* init Lemma */
     IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:kLemmaID
                                                      serverName:@"iOS_test_room"
-                                                     hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch, @"Echo", @"Sum"]
+                                                     hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch, @"Echo", @"Sum", @"PlusOne"]
 #if defined(SENSOR_DEMO_ENABLED)
                                                      playsArray:@[kLemmaEventTypeTouch, kLemmaEventTypeGyro, kLemmaEventTypeAccelerometer]
 #else
@@ -153,6 +154,9 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     }
     else if ([event isEqualToString: @"Sum"]) {
         [lemma sendData: [SumVerify responseFor:data] forEventName: @"SumVerify"];
+    }
+    else if ([event isEqualToString: @"PlusOne"]) {
+        [lemma sendData:[PlusOneVerify responseFor:data] forEventName:@"PlusOneVerify"];
     }
     else {
         self.label.center = self.view.center;
