@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07DB6ECE190AB4B200831E1B /* EchoVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 07DB6ECD190AB4B200831E1B /* EchoVerify.m */; };
 		4B86412E179DFB6700AA26A0 /* IDNoamLemma.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */; };
 		4BFBFA9B1798CBA300E8489A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFBFA9A1798CBA300E8489A /* Foundation.framework */; };
 		4BFBFA9D1798CBA300E8489A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFBFA9C1798CBA300E8489A /* CoreGraphics.framework */; };
@@ -39,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		07DB6ECC190AB4B200831E1B /* EchoVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EchoVerify.h; path = VerificationResponses/EchoVerify.h; sourceTree = "<group>"; };
+		07DB6ECD190AB4B200831E1B /* EchoVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EchoVerify.m; path = VerificationResponses/EchoVerify.m; sourceTree = "<group>"; };
 		4B86412C179DFB6700AA26A0 /* IDNoamLemma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IDNoamLemma.h; path = ../NoamLemma/IDNoamLemma.h; sourceTree = "<group>"; };
 		4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IDNoamLemma.m; path = ../NoamLemma/IDNoamLemma.m; sourceTree = "<group>"; };
 		4BFBFA971798CBA300E8489A /* NoamTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoamTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -94,6 +97,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		07DB6ECB190AB48200831E1B /* VerificationResponses */ = {
+			isa = PBXGroup;
+			children = (
+				07DB6ECC190AB4B200831E1B /* EchoVerify.h */,
+				07DB6ECD190AB4B200831E1B /* EchoVerify.m */,
+			);
+			name = VerificationResponses;
+			sourceTree = "<group>";
+		};
 		4BFBFA8E1798CBA300E8489A = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +141,7 @@
 		4BFBFAA01798CBA300E8489A /* NoamTest */ = {
 			isa = PBXGroup;
 			children = (
+				07DB6ECB190AB48200831E1B /* VerificationResponses */,
 				4BFBFAA91798CBA300E8489A /* IDAppDelegate.h */,
 				4BFBFAAA1798CBA300E8489A /* IDAppDelegate.m */,
 				4BFBFAAC1798CBA300E8489A /* Main_iPhone.storyboard */,
@@ -246,7 +259,7 @@
 						DevelopmentTeam = 3DTT789YMW;
 					};
 					4BFBFABA1798CBA300E8489A = {
-						TestTargetID = 4BFBFA961798CBA300E8489A;
+						TestTargetID = 4BFBFA961798CBA300E8489A /* NoamTest */;
 					};
 				};
 			};
@@ -332,6 +345,7 @@
 				FCED951218BFFAD5000ECAA4 /* GMeterView.m in Sources */,
 				FCED950E18BFF77A000ECAA4 /* SensorTest.m in Sources */,
 				4BFBFAAB1798CBA300E8489A /* IDAppDelegate.m in Sources */,
+				07DB6ECE190AB4B200831E1B /* EchoVerify.m in Sources */,
 				4BFBFAB41798CBA300E8489A /* IDViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

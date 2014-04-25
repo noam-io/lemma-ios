@@ -18,6 +18,8 @@
 #import "IDNoamLemma.h"
 #import "IDViewController.h"
 
+#import "EchoVerify.h"
+
 #if defined(SENSOR_DEMO_ENABLED)
 #import "SensorTest.h"
 #endif
@@ -56,7 +58,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     /* init Lemma */
     IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:kLemmaID
                                                      serverName:@"iOS_test_room"
-                                                     hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch]
+                                                     hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch, @"Echo"]
 #if defined(SENSOR_DEMO_ENABLED)
                                                      playsArray:@[kLemmaEventTypeTouch, kLemmaEventTypeGyro, kLemmaEventTypeAccelerometer]
 #else
@@ -144,6 +146,9 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
                            data[kLemmaEventKeyTimestamp]];
         self.label.hidden = NO;
         [self.view setNeedsDisplay];
+    }
+    else if ([event isEqualToString: @"Echo"]) {
+        [lemma sendData: [EchoVerify responseFor:data] forEventName: @"EchoVerify"];
     }
     else {
         self.label.center = self.view.center;
