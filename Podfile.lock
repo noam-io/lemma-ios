@@ -10,4 +10,4 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 6e59036ecae1e93d6c78f5766149983ceac558ba
   SocketRocket: 7ac946bcce46287a791dfff3c1f8daa692821dae
 
-COCOAPODS: 0.19.1
+COCOAPODS: 0.32.1
