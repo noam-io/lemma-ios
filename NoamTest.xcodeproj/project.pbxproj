@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07419E68190ABE8C00BE5816 /* NameVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 07419E67190ABE8C00BE5816 /* NameVerify.m */; };
+		07419E6B190ABEA500BE5816 /* PlusOneVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 07419E6A190ABEA500BE5816 /* PlusOneVerify.m */; };
+		07419E6E190ABEB800BE5816 /* SumVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 07419E6D190ABEB800BE5816 /* SumVerify.m */; };
 		07DB6ECE190AB4B200831E1B /* EchoVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 07DB6ECD190AB4B200831E1B /* EchoVerify.m */; };
-		2FA2832E7C887E4E9E9B6D9F /* SumVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FA28C031461A4673832D9E9 /* SumVerify.m */; };
-		2FA2879E234BC392C4E7CF7B /* PlusOneVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FA28EF7C38AABD4982174DA /* PlusOneVerify.m */; };
-		2FA28B7C3D28A0C3E84E8B8C /* NameVerify.m in Sources */ = {isa = PBXBuildFile; fileRef = 2FA28CDC7209FDECC56CDB93 /* NameVerify.m */; };
 		4B86412E179DFB6700AA26A0 /* IDNoamLemma.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */; };
 		4BFBFA9B1798CBA300E8489A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFBFA9A1798CBA300E8489A /* Foundation.framework */; };
 		4BFBFA9D1798CBA300E8489A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BFBFA9C1798CBA300E8489A /* CoreGraphics.framework */; };
@@ -43,14 +43,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		07419E66190ABE8C00BE5816 /* NameVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NameVerify.h; path = VerificationResponses/NameVerify.h; sourceTree = "<group>"; };
+		07419E67190ABE8C00BE5816 /* NameVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NameVerify.m; path = VerificationResponses/NameVerify.m; sourceTree = "<group>"; };
+		07419E69190ABEA500BE5816 /* PlusOneVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlusOneVerify.h; path = VerificationResponses/PlusOneVerify.h; sourceTree = "<group>"; };
+		07419E6A190ABEA500BE5816 /* PlusOneVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlusOneVerify.m; path = VerificationResponses/PlusOneVerify.m; sourceTree = "<group>"; };
+		07419E6C190ABEB800BE5816 /* SumVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SumVerify.h; path = VerificationResponses/SumVerify.h; sourceTree = "<group>"; };
+		07419E6D190ABEB800BE5816 /* SumVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SumVerify.m; path = VerificationResponses/SumVerify.m; sourceTree = "<group>"; };
 		07DB6ECC190AB4B200831E1B /* EchoVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EchoVerify.h; path = VerificationResponses/EchoVerify.h; sourceTree = "<group>"; };
 		07DB6ECD190AB4B200831E1B /* EchoVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EchoVerify.m; path = VerificationResponses/EchoVerify.m; sourceTree = "<group>"; };
-		2FA286E9C031276991FE5421 /* PlusOneVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlusOneVerify.h; path = VerificationResponses/PlusOneVerify.h; sourceTree = "<group>"; };
-		2FA28A6ACEFF1EFF34A5FAE6 /* SumVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SumVerify.h; path = VerificationResponses/SumVerify.h; sourceTree = "<group>"; };
-		2FA28C031461A4673832D9E9 /* SumVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SumVerify.m; path = VerificationResponses/SumVerify.m; sourceTree = "<group>"; };
-		2FA28CDC7209FDECC56CDB93 /* NameVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NameVerify.m; path = VerificationResponses/NameVerify.m; sourceTree = "<group>"; };
-		2FA28E95440B093735780D70 /* NameVerify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NameVerify.h; path = VerificationResponses/NameVerify.h; sourceTree = "<group>"; };
-		2FA28EF7C38AABD4982174DA /* PlusOneVerify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PlusOneVerify.m; path = VerificationResponses/PlusOneVerify.m; sourceTree = "<group>"; };
 		4B86412C179DFB6700AA26A0 /* IDNoamLemma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IDNoamLemma.h; path = ../NoamLemma/IDNoamLemma.h; sourceTree = "<group>"; };
 		4B86412D179DFB6700AA26A0 /* IDNoamLemma.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IDNoamLemma.m; path = ../NoamLemma/IDNoamLemma.m; sourceTree = "<group>"; };
 		4BFBFA971798CBA300E8489A /* NoamTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoamTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,8 +109,14 @@
 		07DB6ECB190AB48200831E1B /* VerificationResponses */ = {
 			isa = PBXGroup;
 			children = (
+				07419E66190ABE8C00BE5816 /* NameVerify.h */,
+				07419E67190ABE8C00BE5816 /* NameVerify.m */,
 				07DB6ECC190AB4B200831E1B /* EchoVerify.h */,
 				07DB6ECD190AB4B200831E1B /* EchoVerify.m */,
+				07419E69190ABEA500BE5816 /* PlusOneVerify.h */,
+				07419E6A190ABEA500BE5816 /* PlusOneVerify.m */,
+				07419E6C190ABEB800BE5816 /* SumVerify.h */,
+				07419E6D190ABEB800BE5816 /* SumVerify.m */,
 			);
 			name = VerificationResponses;
 			sourceTree = "<group>";
@@ -161,12 +167,6 @@
 				FCED950B18BFF70A000ECAA4 /* NoamLemma */,
 				4BFBFAB51798CBA300E8489A /* Images.xcassets */,
 				4BFBFAA11798CBA300E8489A /* Supporting Files */,
-				2FA28C031461A4673832D9E9 /* SumVerify.m */,
-				2FA28A6ACEFF1EFF34A5FAE6 /* SumVerify.h */,
-				2FA28EF7C38AABD4982174DA /* PlusOneVerify.m */,
-				2FA286E9C031276991FE5421 /* PlusOneVerify.h */,
-				2FA28CDC7209FDECC56CDB93 /* NameVerify.m */,
-				2FA28E95440B093735780D70 /* NameVerify.h */,
 			);
 			path = NoamTest;
 			sourceTree = "<group>";
@@ -274,7 +274,7 @@
 						DevelopmentTeam = 3DTT789YMW;
 					};
 					4BFBFABA1798CBA300E8489A = {
-						TestTargetID = 4BFBFA961798CBA300E8489A /* NoamTest */;
+						TestTargetID = 4BFBFA961798CBA300E8489A;
 					};
 				};
 			};
@@ -360,11 +360,11 @@
 				FCED951218BFFAD5000ECAA4 /* GMeterView.m in Sources */,
 				FCED950E18BFF77A000ECAA4 /* SensorTest.m in Sources */,
 				4BFBFAAB1798CBA300E8489A /* IDAppDelegate.m in Sources */,
+				07419E6B190ABEA500BE5816 /* PlusOneVerify.m in Sources */,
+				07419E6E190ABEB800BE5816 /* SumVerify.m in Sources */,
 				07DB6ECE190AB4B200831E1B /* EchoVerify.m in Sources */,
+				07419E68190ABE8C00BE5816 /* NameVerify.m in Sources */,
 				4BFBFAB41798CBA300E8489A /* IDViewController.m in Sources */,
-				2FA2832E7C887E4E9E9B6D9F /* SumVerify.m in Sources */,
-				2FA2879E234BC392C4E7CF7B /* PlusOneVerify.m in Sources */,
-				2FA28B7C3D28A0C3E84E8B8C /* NameVerify.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
