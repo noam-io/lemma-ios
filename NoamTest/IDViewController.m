@@ -18,6 +18,11 @@
 #import "IDNoamLemma.h"
 #import "IDViewController.h"
 
+#import "EchoVerify.h"
+#import "SumVerify.h"
+#import "PlusOneVerify.h"
+#import "NameVerify.h"
+
 #if defined(SENSOR_DEMO_ENABLED)
 #import "SensorTest.h"
 #endif
@@ -56,7 +61,7 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
     /* init Lemma */
     IDNoamLemma *lemma = [IDNoamLemma sharedLemmaWithClientName:kLemmaID
                                                      serverName:@"iOS_test_room"
-                                                     hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch]
+                                                     hearsArray:@[@"EventFromOtherEntity", kLemmaEventTypeTouch, @"Echo", @"Sum", @"PlusOne", @"Name"]
 #if defined(SENSOR_DEMO_ENABLED)
                                                      playsArray:@[kLemmaEventTypeTouch, kLemmaEventTypeGyro, kLemmaEventTypeAccelerometer]
 #else
@@ -144,6 +149,18 @@ static NSString * const kLemmaEventKeyTimestamp = @"time";
                            data[kLemmaEventKeyTimestamp]];
         self.label.hidden = NO;
         [self.view setNeedsDisplay];
+    }
+    else if ([event isEqualToString: @"Echo"]) {
+        [lemma sendData: [EchoVerify responseFor:data] forEventName: @"EchoVerify"];
+    }
+    else if ([event isEqualToString: @"Sum"]) {
+        [lemma sendData: [SumVerify responseFor:data] forEventName: @"SumVerify"];
+    }
+    else if ([event isEqualToString: @"PlusOne"]) {
+        [lemma sendData:[PlusOneVerify responseFor:data] forEventName:@"PlusOneVerify"];
+    }
+    else if ([event isEqualToString: @"Name"]) {
+        [lemma sendData:[NameVerify responseFor:data] forEventName:@"NameVerify"];
     }
     else {
         self.label.center = self.view.center;
