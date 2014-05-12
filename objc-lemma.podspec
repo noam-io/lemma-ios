@@ -6,7 +6,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = "objc-lemma"
-  s.version      = "0.1.1"
+  s.version      = "0.1.2"
   s.summary      = "Objective-C Noam lemma implementation."
   s.homepage     = "https://github.com/ideo/obj-c-noam-lemma"
   s.license      = 'MIT'

@@ -34,6 +34,16 @@
 @implementation IDNoamLemma
 
 
+NSString * const IDNoamLemmaConnectionFailedNotification = @"IDNoamLemmaConnectionFailedNotification";
+NSString * const IDNoamLemmaErrorKey = @"IDNoamLemmaErrorKey";
+NSString * const IDNoamLemmaConnectionClosedNotification= @"IDNoamLemmaConnectionClosedNotification";
+NSString * const IDNoamLemmaConnectionClosedReasonKey = @"IDNoamLemmaConnectionClosedReasonKey";
+NSString * const IDNoamLemmaDidConnectNotification = @"IDNoamLemmaDidConnectNotification";
+NSString * const IDNoamLemmaDidReceiveDataNotification = @"IDNoamLemmaDidReceiveDataNotification";
+NSString * const IDNoamLemmaDataKey = @"IDNoamLemmaDataKey";
+NSString * const IDNoamLemmaFromLemmaKey = @"IDNoamLemmaFromLemmaKey";
+NSString * const IDNoamLemmaEventKey = @"IDNoamLemmaEventKey";
+
 static const CGFloat kNoamClientVersion = 0.1;
 static const uint16_t kNoamUDPBroadcastPort = 1032;
 static const NSInteger kNoamWebsocketsPort = 8089;
@@ -259,6 +269,7 @@ static const NSInteger kNoamClientHeartbeatInterval = 5;
     if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
         [self.delegate noamLemma:self didFailToConnectWithError:error];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:IDNoamLemmaConnectionFailedNotification object:self userInfo:@{IDNoamLemmaErrorKey: error}];
 }
 
 
@@ -321,6 +332,7 @@ static const NSInteger kNoamClientHeartbeatInterval = 5;
             NSLog(@"reconnecting ...");
             [self connect];
         }
+        [[NSNotificationCenter defaultCenter] postNotificationName:IDNoamLemmaConnectionFailedNotification object:self userInfo:@{IDNoamLemmaErrorKey: error}];
     }
 }
 
@@ -360,6 +372,7 @@ static const NSInteger kNoamClientHeartbeatInterval = 5;
     if ([self.delegate respondsToSelector:@selector(noamLemmaDidConnectToNoamServer:)]) {
         [self.delegate noamLemmaDidConnectToNoamServer:self];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:IDNoamLemmaDidConnectNotification object:self];
     [self scheduleHeartbeat];
 }
 
@@ -378,6 +391,10 @@ static const NSInteger kNoamClientHeartbeatInterval = 5;
                 if ([self.delegate respondsToSelector:@selector(noamLemma:didReceiveData:fromLemma:forEvent:)]) {
                     [self.delegate noamLemma:self didReceiveData:eventData fromLemma:lemmaID forEvent:eventName];
                 }
+                NSDictionary *userInfo = @{IDNoamLemmaDataKey: eventData,
+                                           IDNoamLemmaEventKey: eventName,
+                                           IDNoamLemmaFromLemmaKey: lemmaID};
+                [[NSNotificationCenter defaultCenter] postNotificationName:IDNoamLemmaDidReceiveDataNotification object:self userInfo:userInfo];
             }
         }
     }
@@ -390,6 +407,7 @@ static const NSInteger kNoamClientHeartbeatInterval = 5;
     if ([self.delegate respondsToSelector:@selector(noamLemma:connectionDidCloseWithReason:)]) {
         [self.delegate noamLemma:self connectionDidCloseWithReason:reason];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:IDNoamLemmaConnectionClosedNotification object:self userInfo:@{IDNoamLemmaConnectionClosedReasonKey: reason}];
 }
 
 
@@ -399,6 +417,7 @@ static const NSInteger kNoamClientHeartbeatInterval = 5;
     if ([self.delegate respondsToSelector:@selector(noamLemma:didFailToConnectWithError:)]) {
         [self.delegate noamLemma:self didFailToConnectWithError:error];
     }
+    [[NSNotificationCenter defaultCenter] postNotificationName:IDNoamLemmaConnectionFailedNotification object:self userInfo:@{IDNoamLemmaErrorKey: error}];
 }
 
 

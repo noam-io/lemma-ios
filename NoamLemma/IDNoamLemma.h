@@ -10,6 +10,16 @@
 #import <Foundation/Foundation.h>
 
 
+extern NSString * const IDNoamLemmaConnectionFailedNotification;
+extern NSString * const IDNoamLemmaErrorKey;
+extern NSString * const IDNoamLemmaConnectionClosedNotification;
+extern NSString * const IDNoamLemmaConnectionClosedReasonKey;
+extern NSString * const IDNoamLemmaDidConnectNotification;
+extern NSString * const IDNoamLemmaDidReceiveDataNotification;
+extern NSString * const IDNoamLemmaDataKey;
+extern NSString * const IDNoamLemmaFromLemmaKey;
+extern NSString * const IDNoamLemmaEventKey;
+
 @class IDNoamLemma;
 
 @protocol IDNoamDelegate <NSObject>
