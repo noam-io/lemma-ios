@@ -1,7 +1,7 @@
 # obj-c-noam-lemma
 
 This is the Objective-C lemma implementation for the Noam network.  
-To read more about Noam, visit the [Noam Wiki](https://sites.google.com/a/ideo.com/noam/).
+To read more about Noam, visit the [Noam Website](http://noam.io).
 
 ## Setup
 
